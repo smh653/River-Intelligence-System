@@ -30,8 +30,7 @@ function RiverMap({ showPredicted = false, showSaraswati = false, showTerrain = 
   return (
     <svg
       viewBox="0 0 640 400"
-      className="w-full h-full"
-      style={{ background: "linear-gradient(135deg, #0d1b2a 0%, #162032 50%, #1a2a1e 100%)" }}
+      style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #0d1b2a 0%, #162032 50%, #1a2a1e 100%)" }}
     >
       {/* Topo lines */}
       {showTerrain && topo.map((d, i) => (
@@ -137,15 +136,15 @@ function RiverMap({ showPredicted = false, showSaraswati = false, showTerrain = 
 function TerrainBars({ label, color, values = [] }) {
   const max = Math.max(...values);
   return (
-    <div className="flex flex-col gap-1">
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "30%" }}>
       <span style={{ color: C.muted, fontSize: 10, fontFamily: "monospace" }}>{label}</span>
-      <div className="flex items-end gap-px" style={{ height: 28 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: 28, width: "100%" }}>
         {values.map((v, i) => (
           <div
             key={i}
             style={{
               height: `${(v / max) * 100}%`,
-              width: 6,
+              flex: 1, // Auto-scales the bar width
               background: color,
               opacity: 0.6 + (i / values.length) * 0.4,
               borderRadius: "1px 1px 0 0",
@@ -438,7 +437,7 @@ function AnalysisPage({ navigate }) {
         </div>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
         {/* LEFT PANEL */}
         <div style={{ borderRight: `1px solid ${C.border}`, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Terrain controls */}
@@ -509,8 +508,8 @@ function AnalysisPage({ navigate }) {
           {/* Terrain mini charts */}
           <Card style={{ padding: 14 }}>
             <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 12, marginBottom: 12, color: C.muted }}>TERRAIN PROFILE</div>
-            <div style={{ display: "flex", gap: 16 }}>
-              <TerrainBars label="ELEV" color={C.accent} values={terrainBars.elevation} />
+            <div style={{ display: "flex", justifyContent: "space-between" }}>              
+            <TerrainBars label="ELEV" color={C.accent} values={terrainBars.elevation} />
               <TerrainBars label="SLOPE" color={computed.slope ? C.green : C.border} values={terrainBars.slope} />
               <TerrainBars label="FLOW" color={computed.flow ? C.amber : C.border} values={terrainBars.flow} />
             </div>
@@ -669,7 +668,7 @@ function SaraswatiPage({ navigate }) {
         </div>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
         {/* LEFT */}
         <div style={{ borderRight: `1px solid ${C.border}`, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Saraswati inference */}
