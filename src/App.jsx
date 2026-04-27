@@ -30,7 +30,7 @@ function RiverMap({ showPredicted = false, showSaraswati = false, showTerrain = 
   return (
     <svg
       viewBox="0 0 640 400"
-      style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #0d1b2a 0%, #162032 50%, #1a2a1e 100%)" }}
+      style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #0d1b2a 0%, #162032 50%, #1a2a1e 100%)", display: "block" }}
     >
       {/* Topo lines */}
       {showTerrain && topo.map((d, i) => (
@@ -144,7 +144,7 @@ function TerrainBars({ label, color, values = [] }) {
             key={i}
             style={{
               height: `${(v / max) * 100}%`,
-              flex: 1, // Auto-scales the bar width
+              flex: 1,
               background: color,
               opacity: 0.6 + (i / values.length) * 0.4,
               borderRadius: "1px 1px 0 0",
@@ -170,6 +170,7 @@ function Badge({ children, color = C.accent }) {
         fontSize: 10,
         fontFamily: "monospace",
         letterSpacing: "0.05em",
+        whiteSpace: "nowrap",
       }}
     >
       {children}
@@ -238,20 +239,6 @@ function LogLine({ text, status = "info" }) {
   );
 }
 
-// ─── Metric card ──────────────────────────────────────────────────
-function MetricCard({ label, value, sub, icon, color = C.accent }) {
-  return (
-    <Card style={{ padding: "14px 16px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-        <span style={{ color: C.text, fontSize: 12, fontFamily: "monospace", fontWeight: 600 }}>{label}</span>
-        <span style={{ fontSize: 18 }}>{icon}</span>
-      </div>
-      <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>{sub}</div>
-      <div style={{ fontSize: 22, fontWeight: 800, color, fontFamily: "monospace" }}>{value}</div>
-    </Card>
-  );
-}
-
 // ═══════════════════════════════════════════════════════════════════
 // PAGE 1 – HOME
 // ═══════════════════════════════════════════════════════════════════
@@ -270,9 +257,9 @@ function HomePage({ navigate }) {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: C.accent + "22", border: `1px solid ${C.accent}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>
             🌊
@@ -288,68 +275,75 @@ function HomePage({ navigate }) {
         </div>
       </header>
 
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
-        {/* Hero map */}
-        <Card style={{ marginBottom: 24, padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>Study Area — Prayagraj Region, UP, India</div>
-              <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace", marginTop: 2 }}>25.45°N 81.84°E · Ganga–Yamuna Doab</div>
-            </div>
-            <div style={{ display: "flex", gap: 16, fontSize: 10, fontFamily: "monospace", color: C.muted }}>
-              <span style={{ color: C.accent }}>── Ganga</span>
-              <span style={{ color: "#60a5fa" }}>── Yamuna</span>
-              <span style={{ color: C.amber }}>◉ Sangam</span>
-            </div>
-          </div>
-          <div style={{ height: 320 }}>
-            <RiverMap showTerrain />
-          </div>
-        </Card>
-
-        {/* Stats row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
-          {stats.map(s => (
-            <div key={s.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
-              <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace", marginBottom: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: s.color, fontFamily: "monospace" }}>{s.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Module cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 28 }}>
-          {[
-            {
-              icon: "📐", label: "Analysis Workspace", desc: "Process terrain data, compute slope & flow direction, run rule-based trajectory prediction.", color: C.green, action: "Go to Analysis", page: "analysis"
-            },
-            {
-              icon: "〰️", label: "Saraswati Exploration", desc: "Infer conceptual paleochannel path using low-gradient zones and depressions. Non-physical model.", color: C.purple, action: "Explore Saraswati", page: "saraswati"
-            },
-            {
-              icon: "✅", label: "Validation Dashboard", desc: "Evaluate prediction accuracy against reference data. Export maps and metrics.", color: C.accent, action: "View Validation", page: "validation"
-            },
-          ].map(m => (
-            <Card key={m.label} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ width: 40, height: 40, background: m.color + "18", border: `1px solid ${m.color}30`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
-                {m.icon}
-              </div>
+      {/* Scrollable Main Content */}
+      <main style={{ flex: 1, overflowY: "auto", width: "100%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
+          {/* Hero map */}
+          <Card style={{ marginBottom: 24, padding: 0, overflow: "hidden" }}>
+            <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, fontFamily: "monospace" }}>{m.label}</div>
-                <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{m.desc}</div>
+                <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>Study Area — Prayagraj Region, UP, India</div>
+                <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace", marginTop: 2 }}>25.45°N 81.84°E · Ganga–Yamuna Doab</div>
               </div>
-              <Btn color={m.color} onClick={() => navigate(m.page)} small>{m.action}</Btn>
-            </Card>
-          ))}
-        </div>
+              <div style={{ display: "flex", gap: 16, fontSize: 10, fontFamily: "monospace", color: C.muted }}>
+                <span style={{ color: C.accent }}>── Ganga</span>
+                <span style={{ color: "#60a5fa" }}>── Yamuna</span>
+                <span style={{ color: C.amber }}>◉ Sangam</span>
+              </div>
+            </div>
+            <div style={{ height: 320 }}>
+              <RiverMap showTerrain />
+            </div>
+          </Card>
 
-        {/* CTA */}
-        <div style={{ textAlign: "center" }}>
-          <Btn onClick={() => navigate("analysis")} color={C.green} icon="▶">
-            Start River Simulation
-          </Btn>
-          <div style={{ marginTop: 10, fontSize: 10, color: C.muted, fontFamily: "monospace" }}>
-            * Saraswati path is a conceptual/academic inference — not a physical simulation
+          {/* Stats row */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
+            {stats.map(s => (
+              <div key={s.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
+                <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace", marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: s.color, fontFamily: "monospace" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Module cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 28 }}>
+            {[
+              {
+                icon: "📐", label: "Analysis Workspace", desc: "Process terrain data, compute slope & flow direction, run rule-based trajectory prediction.", color: C.green, action: "Go to Analysis", page: "analysis"
+              },
+              {
+                icon: "〰️", label: "Saraswati Exploration", desc: "Infer conceptual paleochannel path using low-gradient zones and depressions. Non-physical model.", color: C.purple, action: "Explore Saraswati", page: "saraswati"
+              },
+              {
+                icon: "✅", label: "Validation Dashboard", desc: "Evaluate prediction accuracy against reference data. Export maps and metrics.", color: C.accent, action: "View Validation", page: "validation"
+              },
+            ].map(m => (
+              <Card key={m.label} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ width: 40, height: 40, background: m.color + "18", border: `1px solid ${m.color}30`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                  {m.icon}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, fontFamily: "monospace" }}>{m.label}</div>
+                  <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{m.desc}</div>
+                </div>
+                <div style={{ marginTop: "auto", paddingTop: 8 }}>
+                  <Btn color={m.color} onClick={() => navigate(m.page)} small>{m.action}</Btn>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div style={{ textAlign: "center", paddingBottom: 20 }}>
+            <div style={{ display: "inline-block" }}>
+              <Btn onClick={() => navigate("analysis")} color={C.green} icon="▶">
+                Start River Simulation
+              </Btn>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 10, color: C.muted, fontFamily: "monospace" }}>
+              * Saraswati path is a conceptual/academic inference — not a physical simulation
+            </div>
           </div>
         </div>
       </main>
@@ -424,9 +418,9 @@ function AnalysisPage({ navigate }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div>
           <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>Analysis Workspace</div>
           <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace" }}>Step 2 of 3 · Terrain Analysis & Trajectory Prediction</div>
@@ -437,7 +431,9 @@ function AnalysisPage({ navigate }) {
         </div>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
+      {/* Main Grid Area */}
+      <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", flex: 1, minHeight: 0 }}>
+        
         {/* LEFT PANEL */}
         <div style={{ borderRight: `1px solid ${C.border}`, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Terrain controls */}
@@ -509,7 +505,7 @@ function AnalysisPage({ navigate }) {
           <Card style={{ padding: 14 }}>
             <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 12, marginBottom: 12, color: C.muted }}>TERRAIN PROFILE</div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>              
-            <TerrainBars label="ELEV" color={C.accent} values={terrainBars.elevation} />
+              <TerrainBars label="ELEV" color={C.accent} values={terrainBars.elevation} />
               <TerrainBars label="SLOPE" color={computed.slope ? C.green : C.border} values={terrainBars.slope} />
               <TerrainBars label="FLOW" color={computed.flow ? C.amber : C.border} values={terrainBars.flow} />
             </div>
@@ -574,8 +570,8 @@ function AnalysisPage({ navigate }) {
         </div>
 
         {/* RIGHT MAP PANEL */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
+          <div style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
             <span style={{ fontFamily: "monospace", fontSize: 11, color: C.muted }}>MAP VIEW</span>
             <div style={{ display: "flex", gap: 10, fontSize: 10, fontFamily: "monospace" }}>
               <span style={{ color: C.accent }}>── Actual</span>
@@ -588,13 +584,14 @@ function AnalysisPage({ navigate }) {
               {computed.accum && <Badge color={C.amber}>Accum ✓</Badge>}
             </div>
           </div>
-          <div style={{ flex: 1 }}>
+          
+          <div style={{ flex: 1, minHeight: 0, overflow: "hidden", position: "relative" }}>
             <RiverMap showPredicted={predicted} showTerrain />
           </div>
 
           {/* Algorithm rules panel */}
           {predicted && (
-            <div style={{ borderTop: `1px solid ${C.border}`, padding: "12px 16px", background: C.surface }}>
+            <div style={{ borderTop: `1px solid ${C.border}`, padding: "12px 16px", background: C.surface, flexShrink: 0 }}>
               <div style={{ fontFamily: "monospace", fontSize: 10, color: C.muted, marginBottom: 8 }}>ACTIVE RULES</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[
@@ -617,6 +614,7 @@ function AnalysisPage({ navigate }) {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
@@ -655,9 +653,9 @@ function SaraswatiPage({ navigate }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Header */}
-      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ borderBottom: `1px solid ${C.border}`, padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div>
           <div style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 13 }}>Saraswati Exploration + Validation</div>
           <div style={{ fontSize: 10, color: C.muted, fontFamily: "monospace" }}>Step 3 of 3 · Paleochannel Inference & Accuracy Metrics</div>
@@ -668,8 +666,10 @@ function SaraswatiPage({ navigate }) {
         </div>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 0, height: "calc(100vh - 56px)" }}>
-        {/* LEFT */}
+      {/* Main Grid Area */}
+      <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", flex: 1, minHeight: 0 }}>
+        
+        {/* LEFT PANEL */}
         <div style={{ borderRight: `1px solid ${C.border}`, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Saraswati inference */}
           <Card style={{ padding: 14 }}>
@@ -805,10 +805,10 @@ function SaraswatiPage({ navigate }) {
           </Card>
         </div>
 
-        {/* RIGHT */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* RIGHT PANEL */}
+        <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
           {/* Map legend */}
-          <div style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center" }}>
+          <div style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
             <span style={{ fontFamily: "monospace", fontSize: 11, color: C.muted }}>VALIDATION MAP</span>
             <div style={{ display: "flex", gap: 12, fontSize: 10, fontFamily: "monospace" }}>
               <span style={{ color: C.accent }}>── Actual Rivers</span>
@@ -818,13 +818,13 @@ function SaraswatiPage({ navigate }) {
             {histMap && <Badge color={C.accent}>Historical overlay active</Badge>}
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minHeight: 0, overflow: "hidden", position: "relative" }}>
             <RiverMap showPredicted showSaraswati={saraswatiVisible} showTerrain />
           </div>
 
           {/* Results summary */}
           {metrics.mde && (
-            <div style={{ borderTop: `1px solid ${C.border}`, padding: "14px 20px", background: C.surface }}>
+            <div style={{ borderTop: `1px solid ${C.border}`, padding: "14px 20px", background: C.surface, flexShrink: 0 }}>
               <div style={{ fontFamily: "monospace", fontSize: 10, color: C.muted, marginBottom: 8 }}>RESULTS SUMMARY</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                 {[
@@ -887,8 +887,12 @@ export default function App() {
       fontFamily: "system-ui, sans-serif",
       fontSize: 13,
       background: C.bg,
-      minHeight: "100vh",
+      height: "100vh", // Strict 100vh viewport lock
+      width: "100vw",
+      overflow: "hidden", // Disable full-page scrolling
       color: C.text,
+      display: "flex",
+      flexDirection: "column"
     }}>
       {pages[page] || pages.home}
     </div>
